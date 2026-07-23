@@ -1,141 +1,129 @@
 # VShield.ai — Project Structure
 
-*Day 2 Deliverable — reflects the actual repository as it exists after today's setup, plus where each future day's code will land*
+*Updated Day 3 — reflects the actual repository state after today's authentication scaffold*
 
 ---
 
 ## 1. Full Folder Structure (Target State by Day 10)
 
+Status legend: **✅ Built** | ⬜ Planned (future day)
+
 ```
 vshield-ai/                                  ← GitHub repository root
 │
-├── .gitignore                               ← ignores target/, .idea/, *.class, data/ (H2 db files)
-├── .gitattributes                           ← Spring-generated, line-ending normalization
-├── README.md                                ← project overview + live URL (finalized Day 10)
-├── TESTING.md                                ← test log (created Day 8)
-├── REFLECTION.md                             ← personal reflection (created Day 10, optional)
+├── .gitignore                               ← ✅ (ignores target/, .idea/, *.class, data/)
+├── .gitattributes                           ← ✅ Spring-generated
+├── README.md                                ← ✅ (finalized Day 10)
+├── TESTING.md                                ⬜ (Day 8)
+├── REFLECTION.md                             ⬜ (Day 10, optional)
 │
-├── ARCHITECTURE.md                           ← this Day 2 deliverable
-├── SCHEMA.md                                 ← this Day 2 deliverable
-├── API.md                                    ← this Day 2 deliverable
-├── UI-WIREFRAMES.md                          ← this Day 2 deliverable
-├── PROJECT-STRUCTURE.md                      ← this Day 2 deliverable (you are here)
+├── ARCHITECTURE.md                           ← ✅ (Day 2)
+├── SCHEMA.md                                 ← ✅ (Day 2)
+├── API.md                                    ← ✅ (Day 2)
+├── UI-WIREFRAMES.md                          ← ✅ (Day 2)
+├── PROJECT-STRUCTURE.md                      ← ✅ (Day 2, updated Day 3 — you are here)
+├── Blueprint_Addendum_Day2.docx              ← ✅ (Day 2)
+├── SETUP.md                                  ← ✅ (Day 3)
+├── ENVIRONMENT.md                            ← ✅ (Day 3)
+├── DAY3-SUMMARY.md                           ← ✅ (Day 3)
 │
-├── mvnw, mvnw.cmd                            ← Maven wrapper scripts (auto-generated)
-├── pom.xml                                   ← Maven project config + dependencies
+├── mvnw, mvnw.cmd                            ← ✅ Maven wrapper scripts
+├── pom.xml                                   ← ✅ Maven project config + dependencies
 │
-├── .mvn/                                     ← Maven wrapper internals (auto-generated, don't edit)
+├── .mvn/                                     ← ✅ Maven wrapper internals
+│
+├── data/                                     ← ✅ H2 database file lives here (git-ignored)
+│   └── vshielddb.mv.db
 │
 └── src/
     ├── main/
     │   ├── java/
     │   │   └── com/vshield/vshield/
     │   │       │
-    │   │       ├── VshieldApplication.java          ← Spring Boot entry point (Day 2 ✅)
+    │   │       ├── VshieldApplication.java          ← ✅ (Day 2)
     │   │       │
-    │   │       ├── controller/                      ← REST API layer — handles HTTP in/out only,
-    │   │       │   │                                    no business logic lives here
-    │   │       │   ├── HealthController.java         (Day 2 ✅)
-    │   │       │   ├── AuthController.java           (Day 3)
-    │   │       │   ├── AnalysisController.java       (Day 5)
-    │   │       │   └── HistoryController.java        (Day 6)
+    │   │       ├── Controller/                       ← REST API layer
+    │   │       │   ├── HealthController.java          ← ✅ (Day 2)
+    │   │       │   ├── AuthController.java             ← ✅ (Day 3) — signup, login, /me
+    │   │       │   ├── AnalysisController.java          ⬜ (Day 5)
+    │   │       │   └── HistoryController.java            ⬜ (Day 6)
     │   │       │
-    │   │       ├── service/                          ← business logic layer — the "brain" of the app
-    │   │       │   ├── DetectionService.java          (Day 4) — the 5 rule-based checks
-    │   │       │   ├── UserService.java                (Day 3, if extracted from controller)
-    │   │       │   └── HistoryService.java             (Day 6)
+    │   │       ├── service/                          ← business logic layer
+    │   │       │   ├── DetectionService.java          ⬜ (Day 4) — the 5 rule-based checks
+    │   │       │   └── HistoryService.java              ⬜ (Day 6)
     │   │       │
-    │   │       ├── repository/                        ← Spring Data JPA interfaces — database access only
-    │   │       │   ├── UserRepository.java              (Day 3)
-    │   │       │   └── AnalysisRecordRepository.java    (Day 6)
+    │   │       ├── repository/                        ← Spring Data JPA interfaces
+    │   │       │   ├── UserRepository.java              ← ✅ (Day 3)
+    │   │       │   └── AnalysisRecordRepository.java     ⬜ (Day 6)
     │   │       │
-    │   │       ├── model/                              ← JPA entities — map directly to database tables
-    │   │       │   ├── User.java                        (Day 3)
-    │   │       │   ├── AnalysisRecord.java               (Day 6)
-    │   │       │   ├── AnalysisResult.java                (Day 4) — internal result object,
-    │   │       │   │                                          not a DB entity
-    │   │       │   └── CheckResult.java                    (Day 4) — helper for individual
-    │   │       │                                              rule outcomes
+    │   │       ├── model/                              ← JPA entities + internal result objects
+    │   │       │   ├── User.java                        ← ✅ (Day 3)
+    │   │       │   ├── AnalysisRecord.java                ⬜ (Day 6)
+    │   │       │   ├── AnalysisResult.java                 ⬜ (Day 4)
+    │   │       │   └── CheckResult.java                     ⬜ (Day 4)
     │   │       │
-    │   │       ├── dto/                                 ← request/response shapes exposed via the API —
-    │   │       │   │                                        keeps entities from leaking into responses
-    │   │       │   ├── SignupRequest.java                 (Day 3)
-    │   │       │   ├── LoginRequest.java                   (Day 3)
-    │   │       │   └── AnalyzeRequest.java                  (Day 5)
+    │   │       ├── dto/                                 ← request/response shapes
+    │   │       │   ├── SignupRequest.java                 ← ✅ (Day 3)
+    │   │       │   ├── LoginRequest.java                    ← ✅ (Day 3)
+    │   │       │   └── AnalyzeRequest.java                    ⬜ (Day 5)
     │   │       │
     │   │       ├── config/                                ← Spring configuration classes
-    │   │       │   └── SecurityConfig.java                  (Day 3) — auth rules, password encoder
+    │   │       │   └── SecurityConfig.java                  ← ✅ (Day 3) — auth rules, password encoder
     │   │       │
     │   │       ├── exception/                              ← centralized error handling
-    │   │       │   └── GlobalExceptionHandler.java           (Day 8)
+    │   │       │   └── GlobalExceptionHandler.java           ⬜ (Day 8)
     │   │       │
     │   │       └── util/                                    ← small stateless helpers
-    │   │           └── KeywordLists.java                     (Day 4) — hardcoded keyword/domain
-    │   │                                                        lists used by DetectionService
+    │   │           └── KeywordLists.java                     ⬜ (Day 4)
     │   │
     │   └── resources/
-    │       ├── application.properties         ← server + database config
-    │       │                                      (updated Day 3 for file-based H2, per SCHEMA.md §6)
-    │       ├── static/                          ← all frontend files — served directly by Spring Boot,
-    │       │   │                                    no separate frontend server needed
-    │       │   ├── index.html                    (Day 2 ✅)
-    │       │   ├── style.css                      (Day 2 ✅ → heavily expanded Day 7)
-    │       │   ├── script.js                        (Day 2 ✅, becomes shared/nav helper Day 7)
-    │       │   ├── signup.html                       (Day 3)
-    │       │   ├── login.html                          (Day 3)
-    │       │   ├── auth.js                               (Day 3)
-    │       │   ├── dashboard.html                         (Day 3 placeholder → Day 7 polished)
-    │       │   ├── analyze.html                             (Day 5)
-    │       │   ├── analyze.js                                (Day 5)
-    │       │   ├── history.html                                (Day 6)
-    │       │   └── history.js                                    (Day 6)
+    │       ├── application.properties         ← ✅ updated Day 3 (file-based H2, full config)
+    │       ├── static/
+    │       │   ├── index.html                    ← ✅ (Day 2)
+    │       │   ├── style.css                      ← ✅ (Day 2, expanded Day 7)
+    │       │   ├── script.js                        ← ✅ (Day 2)
+    │       │   ├── signup.html                       ⬜ (Day 3/4 — polished form, not yet built)
+    │       │   ├── login.html                          ⬜ (Day 3/4)
+    │       │   ├── auth.js                               ⬜ (Day 3/4)
+    │       │   ├── dashboard.html                         ⬜ (Day 3 placeholder → Day 7 polished)
+    │       │   ├── analyze.html                             ⬜ (Day 5)
+    │       │   ├── analyze.js                                ⬜ (Day 5)
+    │       │   ├── history.html                                ⬜ (Day 6)
+    │       │   └── history.js                                    ⬜ (Day 6)
     │       │
-    │       └── templates/                        ← auto-generated by Spring Initializr;
-    │                                                  unused in v1.0 (we serve static HTML,
-    │                                                  not server-rendered templates) — left empty
+    │       └── templates/                        ← unused in v1.0 (static HTML, not server-rendered)
     │
     └── test/
         └── java/com/vshield/vshield/
-            └── DetectionServiceTest.java          ← standalone unit tests for the detection
-                                                         engine (Day 4), run independent of the
-                                                         web server
+            └── DetectionServiceTest.java          ⬜ (Day 4)
 ```
 
 ---
 
-## 2. Why This Structure
+## 2. What Changed Since Day 2
 
-**Standard Spring Boot layered architecture** (`controller` → `service` → `repository` → `model`) was chosen over alternatives (e.g., package-by-feature) because:
+- **`Controller/AuthController.java`, `repository/UserRepository.java`, `model/User.java`, `config/SecurityConfig.java`, `dto/SignupRequest.java`, `dto/LoginRequest.java`** — all newly created today, exactly matching the folders anticipated in Day 2's design.
+- **`data/` folder** — new; holds the H2 database file. Not part of the original Day 2 structure diagram since it didn't exist until file-based mode was configured today. Now documented and confirmed git-ignored.
+- **`application.properties`** — went from a single auto-generated line to a fully documented configuration file (see ENVIRONMENT.md for the complete reference).
 
-- It's the structure taught in virtually every Spring Boot tutorial and used in real-world Java teams — directly useful for interviews and future jobs, not just this capstone.
-- Each layer has exactly one job, which matters a lot at comfort-level 1/5: when something breaks, you know which folder to look in (HTTP problem → `controller`; logic problem → `service`; data problem → `repository`).
-- It matches the Implementation Blueprint's file-by-file plan exactly — every file mentioned in Days 3–8 has an obvious, unambiguous home.
-
-**Frontend lives inside `src/main/resources/static/`** (not a separate `frontend/` folder or project) because:
-
-- Spring Boot serves this folder automatically with zero extra configuration — no CORS setup, no separate dev server, no build step.
-- One JAR = one deployable unit, which keeps Day 9 (deployment) dramatically simpler than managing two separate deployments.
-
-**`dto/` is separate from `model/`** because:
-
-- `model/` classes are JPA entities tied directly to database tables (they carry Hibernate annotations, lazy-loading behavior, etc.).
-- `dto/` classes are plain objects shaped exactly like what the API should expose — this is what prevents bugs like accidentally returning a user's `passwordHash` in a JSON response, and avoids the `LazyInitializationException` risk called out in the Day 6 blueprint's debugging tips.
-
-**`util/KeywordLists.java` is separate from `service/DetectionService.java`** because:
-
-- Keyword/domain lists will likely be tuned repeatedly during Day 4 and Day 8 testing — keeping them in their own file means editing detection *data* never risks accidentally breaking detection *logic*.
+**One naming note carried forward:** the controller package is capitalized `Controller/` (not `controller/`) because that's how IntelliJ auto-created it back on Day 2 when the `HealthController` was first built, and today's `AuthController` was added to the same existing package for consistency. This is purely cosmetic (Java doesn't enforce package naming case, only convention) — flagged here for awareness, not treated as a bug requiring a disruptive rename mid-build.
 
 ---
 
-## 3. What Should Never Go Where
+## 3. Validation Against SCHEMA.md and API.md
 
-- **No business logic in `controller/`** — controllers should only: receive the request, call a service method, return the response. If you find yourself writing an `if` statement about scam detection inside a controller, it belongs in `DetectionService` instead.
-- **No direct entity returns from any controller** — always map to a DTO first (formalized in ARCHITECTURE.md §6).
-- **No raw SQL** — Spring Data JPA repository method names (e.g., `findByUserOrderByCreatedAtDesc`) generate the SQL for us; v1.0 has no query complex enough to need `@Query` or native SQL.
-- **No frontend framework folders** (`node_modules/`, `src/components/`, etc.) — per the PRD, frontend is plain HTML/CSS/JS with no build step, so none of this should ever appear in the repository.
+| Design Document | What It Specified | What Was Actually Built | Match? |
+|---|---|---|---|
+| SCHEMA.md §2 | `USERS` table: id, email (unique), password_hash, created_at | `User.java` entity — identical fields and constraints | ✅ |
+| API.md §2 | `POST /api/auth/signup` — validation, 201/400/409 responses | `AuthController.signup()` — matches exactly | ✅ |
+| API.md §3 | `POST /api/auth/login` — 200/400/401, generic error message | `AuthController.login()` — matches exactly | ✅ |
+| API.md §5 | `GET /api/auth/me` — 200/401 | `AuthController.me()` — matches exactly | ✅ |
+| ARCHITECTURE.md §6 | DTOs at the boundary, never expose entities directly | Confirmed — `AuthController` returns `Map<String,Object>` responses, never a raw `User` object (so `passwordHash` can never leak) | ✅ |
+
+No deviations found — today's implementation is a direct, verified match to Day 2's design.
 
 ---
 
-## 4. Current State vs. Target State
+## 4. What Remains Unambiguous for Day 4 Onward
 
-As of the end of Day 2, the repository already matches the target structure through the items marked **(Day 2 ✅)** above: `VshieldApplication.java`, `HealthController.java`, `application.properties`, and the three static frontend files. Every folder referenced by a later day (`service/`, `repository/`, `model/`, `dto/`, `config/`, `exception/`, `util/`) does not exist yet and will be created fresh on the day it's first needed — exactly as laid out in the Implementation Blueprint. This document is what confirms, in advance, that there is one unambiguous right place for every file the rest of the capstone will create.
+Every folder needed for the rest of the build (`service/`, remaining `model/` classes, remaining `dto/` classes, `exception/`, `util/`) is pre-planned and has zero ambiguity about where new files belong — Day 4 can begin writing `DetectionService.java` immediately without any structural decisions left to make.
