@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard — VShield.ai</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<canvas id="matrixCanvas"></canvas>
+
+<div class="page-overlay">
+    <nav class="navbar">
+        <span class="brand">🛡 VShield.ai</span>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="analyze.html">Analyze</a>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="wide-container">
+        <h1 id="welcomeMsg">Welcome</h1>
+        <p>VShield.ai helps you vet suspicious offers before you respond — paste any message, email, or link.</p>
+
+        <div style="display:flex; gap:16px; margin-top:24px;">
+            <a href="analyze.html" style="flex:1; text-decoration:none;">
+                <div class="card" style="cursor:pointer;">
+                    <h3>🔍 Analyze a Message</h3>
+                    <p>Check a new message for scam signals</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+    requireAuth().then(user => {
+        if (user) {
+            document.getElementById('welcomeMsg').textContent = 'Welcome, ' + user.email;
+        }
+    });
+
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const chars = '0123456789';
+    const fontSize = 16;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = new Array(columns).fill(1);
+
+    function draw() {
+        ctx.fillStyle = 'rgba(13, 17, 40, 0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            const isRed = Math.random() > 0.92;
+            ctx.fillStyle = isRed ? '#E63946' : '#4ade80';
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    setInterval(draw, 45);
+</script>
+</body>
+</html>

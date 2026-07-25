@@ -20,16 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/health",
-                                "/api/auth/**",
-                                "/h2-console/**",
-                                "/",
-                                "/*.html",
-                                "/*.css",
-                                "/*.js"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
