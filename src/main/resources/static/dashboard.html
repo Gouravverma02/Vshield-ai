@@ -13,6 +13,7 @@
         <span class="brand">🛡 VShield.ai</span>
         <a href="dashboard.html" class="active">Dashboard</a>
         <a href="analyze.html">Analyze</a>
+        <a href="history.html">History</a>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </nav>
 
@@ -20,15 +21,23 @@
         <h1 id="welcomeMsg">Welcome</h1>
         <p>VShield.ai helps you vet suspicious offers before you respond — paste any message, email, or link.</p>
 
-        <div style="display:flex; gap:16px; margin-top:24px;">
-            <a href="analyze.html" style="flex:1; text-decoration:none;">
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <a href="analyze.html" style="flex:1; min-width:220px; text-decoration:none;">
                 <div class="card" style="cursor:pointer;">
                     <h3>🔍 Analyze a Message</h3>
                     <p>Check a new message for scam signals</p>
                 </div>
             </a>
+            <a href="history.html" style="flex:1; min-width:220px; text-decoration:none;">
+                <div class="card" style="cursor:pointer;">
+                    <h3>📜 View History</h3>
+                    <p>Review your past checks</p>
+                </div>
+            </a>
         </div>
     </div>
+
+    <footer class="site-footer">Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.</footer>
 </div>
 
 <script src="auth.js"></script>
@@ -41,7 +50,6 @@
 
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
-
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -51,29 +59,20 @@
 
     const chars = '0123456789';
     const fontSize = 16;
-    let columns = Math.floor(canvas.width / fontSize);
-    let drops = new Array(columns).fill(1);
+    let drops = new Array(Math.floor(canvas.width / fontSize)).fill(1);
 
     function draw() {
-        ctx.fillStyle = 'rgba(13, 17, 40, 0.08)';
+        ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         ctx.font = fontSize + 'px monospace';
-
         for (let i = 0; i < drops.length; i++) {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            const isRed = Math.random() > 0.92;
-            ctx.fillStyle = isRed ? '#E63946' : '#4ade80';
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
+            ctx.fillStyle = '#4ade80';
+            ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) drops[i] = 0;
             drops[i]++;
         }
     }
-
-    setInterval(draw, 45);
+    setInterval(draw, 60);
 </script>
 </body>
 </html>

@@ -926,4 +926,38 @@ nav.navbar button.logout-btn {
                             font-size: 17px;
                             font-weight: 700;
                         }
-                        .card p { color: #9aa7d1 !important; font-size: 13.5px; margin: 0; }
+                        .page-overlay {
+                            position: relative;
+                            z-index: 1;
+                            width: 100%;
+                            min-height: 100vh;
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .page-overlay > .wide-container {
+                            flex: 1;
+                        }
+
+                        .site-footer {
+                            position: relative;
+                            z-index: 1;
+                            text-align: center;
+                            padding: 18px 20px;
+                            font-size: 12.5px;
+                            font-weight: 500;
+                            color: #7d89b0;
+                            background: rgba(10, 14, 39, 0.75);
+                            backdrop-filter: blur(10px);
+                            border-top: 1px solid rgba(255,255,255,0.08);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                        }
+
+                        .site-footer::before {
+                            content: "🛡";
+                            font-size: 13px;
+                            opacity: 0.8;
+                        }
