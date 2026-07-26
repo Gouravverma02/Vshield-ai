@@ -12,6 +12,18 @@
             padding: 28px;
         }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         textarea {
             width: 100%;
             min-height: 160px;
@@ -120,6 +132,7 @@
 
         <div class="analyze-box">
             <form onsubmit="submitAnalysis(event)">
+                <label for="messageInput" class="sr-only">Message to analyze</label>
                 <textarea id="messageInput" placeholder="Paste the message, email, or link here..."></textarea>
                 <div id="errorBox" class="error-message"></div>
                 <div id="loading" class="loading">Analyzing...</div>
