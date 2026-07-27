@@ -29,14 +29,16 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "An account with this email already exists");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
-        User newUser = new User(request.getEmail(), hashedPassword);
+        User newUser = new User(normalizedEmail, hashedPassword);
         userRepository.save(newUser);
 
         Map<String, Object> response = new HashMap<>();
@@ -48,7 +50,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        Optional<User> userOptional = userRepository.findByEmail(normalizedEmail);
 
         if (userOptional.isEmpty() ||
                 !passwordEncoder.matches(request.getPassword(), userOptional.get().getPasswordHash())) {
@@ -65,6 +68,14 @@ public class AuthController {
         response.put("id", user.getId());
         response.put("email", user.getEmail());
         response.put("message", "Login successful");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Logged out successfully");
         return ResponseEntity.ok(response);
     }
 
