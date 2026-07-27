@@ -2,78 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — VShield.ai</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="matrixCanvas"></canvas>
+<a href="#main" class="skip-link">Skip to content</a>
+<canvas id="matrixCanvas" aria-hidden="true"></canvas>
 
 <div class="page-overlay">
-    <nav class="navbar">
-        <span class="brand">🛡 VShield.ai</span>
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="analyze.html">Analyze</a>
-        <a href="history.html">History</a>
+    <nav class="navbar" id="navbar">
+        <a href="dashboard.html" class="brand"><span aria-hidden="true">🛡</span> VShield.ai</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <a href="dashboard.html" class="nav-link active" aria-current="page">Dashboard</a>
+        <a href="analyze.html" class="nav-link">Analyze</a>
+        <a href="history.html" class="nav-link">History</a>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </nav>
 
-    <div class="wide-container">
-        <h1 id="welcomeMsg">Welcome</h1>
-        <p>VShield.ai helps you vet suspicious offers before you respond — paste any message, email, or link.</p>
+    <main id="main" class="wide-container">
+        <h1 class="page-title" id="welcomeMsg">Welcome</h1>
+        <p class="page-subtitle">VShield.ai helps you vet suspicious offers before you respond — paste any message, email, or link.</p>
 
-        <div style="display:flex; gap:16px; flex-wrap:wrap;">
-            <a href="analyze.html" style="flex:1; min-width:220px; text-decoration:none;">
-                <div class="card" style="cursor:pointer;">
-                    <h3>🔍 Analyze a Message</h3>
+        <div class="dashboard-actions" style="display:flex; gap:16px; flex-wrap:wrap;">
+            <a href="analyze.html" class="card-link" style="flex:1; min-width:220px;">
+                <div class="card interactive">
+                    <h3><span aria-hidden="true">🔍</span> Analyze a Message</h3>
                     <p>Check a new message for scam signals</p>
                 </div>
             </a>
-            <a href="history.html" style="flex:1; min-width:220px; text-decoration:none;">
-                <div class="card" style="cursor:pointer;">
-                    <h3>📜 View History</h3>
+            <a href="history.html" class="card-link" style="flex:1; min-width:220px;">
+                <div class="card interactive">
+                    <h3><span aria-hidden="true">📜</span> View History</h3>
                     <p>Review your past checks</p>
                 </div>
             </a>
         </div>
-    </div>
+    </main>
 
     <footer class="site-footer">Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.</footer>
 </div>
 
 <script src="auth.js"></script>
+<script src="nav.js"></script>
 <script>
     requireAuth().then(user => {
         if (user) {
             document.getElementById('welcomeMsg').textContent = 'Welcome, ' + user.email;
         }
     });
-
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const chars = '0123456789';
-    const fontSize = 16;
-    let drops = new Array(Math.floor(canvas.width / fontSize)).fill(1);
-
-    function draw() {
-        ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = fontSize + 'px monospace';
-        for (let i = 0; i < drops.length; i++) {
-            ctx.fillStyle = '#4ade80';
-            ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-    setInterval(draw, 60);
+    initMatrixBackground();
 </script>
-<link rel="stylesheet" href="style.css">
 </body>
 </html>

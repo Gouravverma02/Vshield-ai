@@ -1,23 +1,41 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.getElementById('messageInput');
+    const charCount = document.getElementById('charCount');
+    if (textarea && charCount) {
+        textarea.addEventListener('input', () => {
+            const len = textarea.value.length;
+            charCount.textContent = len + ' / 5000 characters';
+            charCount.style.color = len > 5000 ? 'var(--danger)' : 'var(--text-muted)';
+        });
+    }
+});
+
 function submitAnalysis(event) {
     event.preventDefault();
 
     const text = document.getElementById('messageInput').value.trim();
     const btn = document.getElementById('analyzeBtn');
     const resultBox = document.getElementById('resultBox');
-    const loading = document.getElementById('loading');
+    const loadingBox = document.getElementById('loadingBox');
     const errorBox = document.getElementById('errorBox');
 
-    errorBox.style.display = 'none';
-    resultBox.style.display = 'none';
+    errorBox.classList.remove('show');
+    resultBox.classList.remove('show');
 
     if (!text) {
         errorBox.textContent = 'Please paste a message to analyze.';
-        errorBox.style.display = 'block';
+        errorBox.classList.add('show');
+        return;
+    }
+
+    if (text.length > 5000) {
+        errorBox.textContent = 'Message is too long. Please keep it under 5000 characters.';
+        errorBox.classList.add('show');
         return;
     }
 
     btn.disabled = true;
-    loading.style.display = 'block';
+    loadingBox.classList.add('show');
 
     fetch('/api/analyze', {
         method: 'POST',
@@ -32,24 +50,24 @@ function submitAnalysis(event) {
             return res.json().then(data => ({ status: res.status, data }));
         })
         .then(result => {
-            loading.style.display = 'none';
+            loadingBox.classList.remove('show');
             btn.disabled = false;
 
             if (!result) return;
 
             if (result.status !== 200) {
-                errorBox.textContent = result.data.error || 'Something went wrong.';
-                errorBox.style.display = 'block';
+                errorBox.textContent = result.data.error || 'Something went wrong. Please try again.';
+                errorBox.classList.add('show');
                 return;
             }
 
             renderResult(result.data);
         })
         .catch(() => {
-            loading.style.display = 'none';
+            loadingBox.classList.remove('show');
             btn.disabled = false;
-            errorBox.textContent = 'Network error. Please try again.';
-            errorBox.style.display = 'block';
+            errorBox.textContent = 'Network error. Please check your connection and try again.';
+            errorBox.classList.add('show');
         });
 }
 
@@ -64,7 +82,7 @@ function renderResult(data) {
         DANGEROUS: '🔴 DANGEROUS'
     }[verdict] || verdict;
 
-    let reasonsHtml = '<li style="color:#9aa7d1;">No red flags detected.</li>';
+    let reasonsHtml = '<li style="color:var(--text-secondary);">No red flags detected.</li>';
     if (data.reasons && data.reasons.length > 0) {
         reasonsHtml = data.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('');
     }
@@ -74,7 +92,7 @@ function renderResult(data) {
         stepsHtml = data.nextSteps.map(s => `<li>${escapeHtml(s)}</li>`).join('');
     }
 
-    resultBox.className = 'verdict-card verdict-' + verdictClass;
+    resultBox.className = 'verdict-card result-inline verdict-' + verdictClass;
     resultBox.innerHTML = `
         <span class="verdict-badge badge-${verdictClass}">${badgeLabel}</span>
         <span class="score-text">Risk Score: ${data.riskScore} / 100</span>
@@ -83,7 +101,8 @@ function renderResult(data) {
         <h3>What to do next</h3>
         <ul>${stepsHtml}</ul>
     `;
-    resultBox.style.display = 'block';
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function escapeHtml(text) {
