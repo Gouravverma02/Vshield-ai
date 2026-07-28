@@ -1,3 +1,18 @@
+function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + (minutes === 1 ? ' minute ago' : ' minutes ago');
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + (hours === 1 ? ' hour ago' : ' hours ago');
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + (days === 1 ? ' day ago' : ' days ago');
+    return date.toLocaleDateString();
+}
+
 function loadHistory() {
     const listEl = document.getElementById('historyList');
     listEl.innerHTML = `
@@ -48,13 +63,14 @@ function renderList(records) {
     listEl.innerHTML = records.map(r => {
         const verdictClass = r.verdict.toLowerCase();
         const badgeEmoji = { SAFE: '🟢', SUSPICIOUS: '🟡', DANGEROUS: '🔴' }[r.verdict] || '';
-        const date = new Date(r.createdAt).toLocaleString();
+        const relative = timeAgo(r.createdAt);
+        const fullDate = new Date(r.createdAt).toLocaleString();
 
         return `
-            <div class="history-item" role="button" tabindex="0" onclick="loadDetail(${r.id})" onkeydown="if(event.key==='Enter'){loadDetail(${r.id})}" aria-label="View analysis from ${date}, verdict ${r.verdict}">
+            <div class="history-item" role="button" tabindex="0" onclick="loadDetail(${r.id})" onkeydown="if(event.key==='Enter'){loadDetail(${r.id})}" aria-label="View analysis from ${fullDate}, verdict ${r.verdict}">
                 <div class="history-item-top">
                     <span class="verdict-badge badge-${verdictClass}">${badgeEmoji} ${r.verdict}</span>
-                    <span class="history-date">${date}</span>
+                    <span class="history-date" title="${fullDate}">${relative}</span>
                 </div>
                 <div class="history-preview">${escapeHtml(r.textPreview)}</div>
             </div>
