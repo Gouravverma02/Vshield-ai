@@ -7,6 +7,7 @@ import com.vshield.vshield.model.User;
 import com.vshield.vshield.repository.AnalysisRecordRepository;
 import com.vshield.vshield.repository.UserRepository;
 import com.vshield.vshield.service.DetectionService;
+import com.vshield.vshield.util.SessionUserHelper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,14 +38,7 @@ public class AnalysisController {
 
     @PostMapping("/analyze")
     public ResponseEntity<?> analyze(@Valid @RequestBody AnalyzeRequest request, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
-
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> userOptional = SessionUserHelper.getSessionUser(session, userRepository);
         if (userOptional.isEmpty()) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Not authenticated");
@@ -53,7 +46,8 @@ public class AnalysisController {
         }
         User user = userOptional.get();
 
-        AnalysisResult result = detectionService.analyze(request.getText());
+        String trimmedText = request.getText().trim();
+        AnalysisResult result = detectionService.analyze(trimmedText);
 
         String reasonsJoined = String.join(DELIMITER, result.getReasons());
         String nextStepsJoined = String.join(DELIMITER, result.getNextSteps());
@@ -62,7 +56,7 @@ public class AnalysisController {
                 user,
                 result.getVerdict().toString(),
                 result.getRiskScore(),
-                request.getText(),
+                trimmedText,
                 reasonsJoined,
                 nextStepsJoined
         );

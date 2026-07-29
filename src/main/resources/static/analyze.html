@@ -27,7 +27,7 @@
         <div class="card">
             <form onsubmit="submitAnalysis(event)" novalidate>
                 <label for="messageInput">Message, email, or link</label>
-                <textarea id="messageInput" placeholder="Paste the message, email, or link here..." aria-describedby="charCount"></textarea>
+                <textarea id="messageInput" placeholder="Paste the message, email, or link here..." aria-describedby="charCount" maxlength="5000"></textarea>
                 <div id="charCount" class="field-hint">0 / 5000 characters</div>
 
                 <div id="errorBox" class="error-message" role="alert"></div>

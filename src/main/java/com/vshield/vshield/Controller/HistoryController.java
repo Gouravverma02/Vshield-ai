@@ -4,6 +4,7 @@ import com.vshield.vshield.model.AnalysisRecord;
 import com.vshield.vshield.model.User;
 import com.vshield.vshield.repository.AnalysisRecordRepository;
 import com.vshield.vshield.repository.UserRepository;
+import com.vshield.vshield.util.SessionUserHelper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,6 @@ import java.util.Optional;
 @RequestMapping("/api/history")
 public class HistoryController {
 
-    private static final String DELIMITER = "|||";
-
     private final AnalysisRecordRepository analysisRecordRepository;
     private final UserRepository userRepository;
 
@@ -33,10 +32,11 @@ public class HistoryController {
 
     @GetMapping
     public ResponseEntity<?> getHistory(HttpSession session) {
-        User user = getSessionUser(session);
-        if (user == null) {
+        Optional<User> userOptional = SessionUserHelper.getSessionUser(session, userRepository);
+        if (userOptional.isEmpty()) {
             return unauthenticated();
         }
+        User user = userOptional.get();
 
         List<AnalysisRecord> records = analysisRecordRepository.findByUserOrderByCreatedAtDesc(user);
 
@@ -56,10 +56,11 @@ public class HistoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getHistoryDetail(@PathVariable Long id, HttpSession session) {
-        User user = getSessionUser(session);
-        if (user == null) {
+        Optional<User> userOptional = SessionUserHelper.getSessionUser(session, userRepository);
+        if (userOptional.isEmpty()) {
             return unauthenticated();
         }
+        User user = userOptional.get();
 
         Optional<AnalysisRecord> recordOptional = analysisRecordRepository.findByIdAndUser(id, user);
         if (recordOptional.isEmpty()) {
@@ -79,14 +80,6 @@ public class HistoryController {
         response.put("createdAt", record.getCreatedAt());
 
         return ResponseEntity.ok(response);
-    }
-
-    private User getSessionUser(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return null;
-        }
-        return userRepository.findById(userId).orElse(null);
     }
 
     private ResponseEntity<?> unauthenticated() {

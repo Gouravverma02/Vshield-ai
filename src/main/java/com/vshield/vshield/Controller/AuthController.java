@@ -4,6 +4,7 @@ import com.vshield.vshield.dto.LoginRequest;
 import com.vshield.vshield.dto.SignupRequest;
 import com.vshield.vshield.model.User;
 import com.vshield.vshield.repository.UserRepository;
+import com.vshield.vshield.security.LoginRateLimiter;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,12 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginRateLimiter rateLimiter;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginRateLimiter rateLimiter) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.rateLimiter = rateLimiter;
     }
 
     @PostMapping("/signup")
@@ -51,15 +54,24 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
+
+        if (rateLimiter.isBlocked(normalizedEmail)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Too many failed login attempts. Please try again in 15 minutes.");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+        }
+
         Optional<User> userOptional = userRepository.findByEmail(normalizedEmail);
 
         if (userOptional.isEmpty() ||
                 !passwordEncoder.matches(request.getPassword(), userOptional.get().getPasswordHash())) {
+            rateLimiter.recordFailedAttempt(normalizedEmail);
             Map<String, String> error = new HashMap<>();
             error.put("error", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
 
+        rateLimiter.recordSuccess(normalizedEmail);
         User user = userOptional.get();
         session.setAttribute("userId", user.getId());
         session.setAttribute("userEmail", user.getEmail());
